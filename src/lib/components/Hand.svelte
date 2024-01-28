@@ -2,11 +2,13 @@
   import type {Card, Lobby} from "$lib/types/types.ts";
   import {api} from "$lib/backend_adapter/backend/api.ts";
   import CardComp from "$lib/components/CardFront.svelte";
-
+  import {getToastStore} from "@skeletonlabs/skeleton";
+  import {fly} from "svelte/transition"
   export let lobby: Lobby
 
   export let player_id: "0" | "1"
   $: hand = player_id === "0" ? lobby.player_0.hand : lobby.player_1.hand
+  const toastStore = getToastStore();
 
   export let lobby_id: string
   export let phase: "select" | "buy" | undefined
@@ -27,16 +29,34 @@
     selected_cards = new_selected_cards
   }
   async function selectCards() {
-    phase = undefined
-    lobby = await api.game.postGameStateSelectCards(player_id, lobby_id, selected_cards)
+    try{
+      phase = undefined
+      lobby = await api.game.postGameStateSelectCards(player_id, lobby_id, selected_cards)
+    } catch (e) {
+      console.log(e)
+      toastStore.trigger({
+        message: e.body?.error ? e.body?.error : "Unknown error buying cards",
+        background: "variant-filled-error",
+      })
+      phase = "select"
+    }
   }
 </script>
 
 <div>
   <div class="card flex flex-col gap-4 p-4 h-full min-h-[415px]">
     <h4 class="h4">Your Hand (Player {player_id}): </h4>
-    <div class="flex gap-4">
-      <p class="flex gap-1">{player_health}<img src="assets/heart.png" alt="health" class="w-[16px] h-[16px] ml-auto mt-1" /></p>
+    <div class="flex">
+      <div class="flex gap-1">
+        {#each Array(player_health) as _}
+          <img
+            src="assets/heart.png"
+            alt="health"
+            class="w-[16px] h-[16px] ml-auto mt-1"
+              transition:fly={{duration: 2000, x: "-50", y: "50%", delay: 0, opacity: 0.5}}
+          />
+        {/each}
+      </div>
     </div>
     <div class="flex gap-4 overflow-y-visible hide-scrollbar overflow-scroll p-4">
       {#if hand && hand.length > 0}
@@ -53,7 +73,7 @@
       {/if}
     </div>
     {#if phase === "select"}
-      <button on:click={() => selectCards()} class="btn variant-filled-primary">Merge Cards</button>
+      <button on:click={() => selectCards()} class="btn variant-filled-primary">Merge Selected Cards</button>
     {/if}
   </div>
 </div>

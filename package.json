@@ -19,6 +19,7 @@
     "@iconify-json/mdi": "^1.1.54",
     "@skeletonlabs/skeleton": "2.3.0",
     "@skeletonlabs/tw-plugin": "0.2.2",
+    "@sveltejs/adapter-auto": "^3.1.1",
     "@sveltejs/adapter-static": "^3.0.1",
     "@sveltejs/kit": "^2.0.0",
     "@tailwindcss/forms": "0.5.6",
@@ -56,9 +57,9 @@
     "lodash": "^4.17.21",
     "svelte-heros-v2": "^0.10.12",
     "svelte-previous": "^2.1.4",
+    "vite-plugin-tailwind-purgecss": "^0.2.0",
     "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.11",
-    "vite-plugin-tailwind-purgecss": "^0.2.0"
+    "yuv-canvas": "^1.2.11"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

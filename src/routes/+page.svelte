@@ -6,10 +6,12 @@
   import JoinDialogue from "$lib/components/JoinDialogue.svelte";
   import PlayArea from "$lib/components/PlayArea.svelte";
   import GlitchText from "$lib/components/GlitchText.svelte";
+  import {getToastStore} from "@skeletonlabs/skeleton";
 
   let lobby_id: string | undefined
   let player_id: "0" | "1" | undefined
   let lobby: Lobby | undefined
+  const toastStore = getToastStore();
 
   $: create = undefined
   $: lobby_id = undefined
@@ -22,9 +24,16 @@
 
   const apiInterval = setInterval(async () => {
     if(refreshes_data && lobby_id !== undefined && player_id !== undefined){
-      await api.game.getGameState(player_id, lobby_id).then((res) => {
-        lobby = res
-      })
+      try{
+        await api.game.getGameState(player_id, lobby_id).then((res) => {
+          lobby = res
+        })
+      }catch (e){
+        toastStore.trigger({
+          message: e.error ? e.error : "Connection lost... retrying",
+          background: "variant-filled-error",
+        })
+      }
     }}, 1000)
     onDestroy(() => {
     clearInterval(apiInterval)

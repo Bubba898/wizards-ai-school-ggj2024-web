@@ -1,15 +1,20 @@
 <script lang="ts">
   import type {Card} from "$lib/types/types.ts";
   import _ from "lodash";
+  import { fly } from "svelte/transition";
   export let card: Card;
   $: url = card.url ?? `assets/cards/${card.name.toLowerCase().replaceAll("_", " ", )}.png`
   export let selected: boolean
   $: selected
   $: font_size = _.min([24, _.max([160/card.name.length*3.6, 8])])
+
+
 </script>
 
 
-<div class={`card h-[270px] w-[188px] p-[12px] ${selected ? "glow" : ""} ${card.type === 'merged' ? 'card-background-merged' : card.type === 'character' ? 'card-background-merged': 'card-background-component'}`} >
+<div
+  class={`card h-[270px] w-[188px] p-[12px] ${selected ? "glow" : ""} ${card.type === 'merged' ? 'card-background-merged' : card.type === 'character' ? 'card-background-merged': 'card-background-component'}`}
+>
   <div class="w-[164px] h-[164px] rounded overflow-hidden">
     <img src={url} alt={card.name} class="w-full h-full object-cover border-2 border-white" />
   </div>

@@ -26,9 +26,16 @@
       })
       return
     }
-    await api.lobby.postLobby1(lobby_id_input)
-    lobby_id = lobby_id_input
-    player_id = "1"
+    try {
+      await api.lobby.postLobby1(lobby_id_input)
+      lobby_id = lobby_id_input
+      player_id = "1"
+    } catch (e) {
+      toastStore.trigger({
+        message: "Lobby not found",
+        background: "variant-filled-error",
+      })
+    }
   }
 
   function setCreate(_value: boolean) {
@@ -37,8 +44,12 @@
 </script>
 
 <div class="flex flex-col justify-center items-center h-full">
-  <GlitchText>Welcome to AI Wizard School!</GlitchText>
-  <div class="flex items-center place-content-center w-full pt-20 gap-10 align-bottom">
+  <GlitchText>Welcome to Who would Win!</GlitchText>
+  <div class="m-20">
+    <p class="text-2xl text-center">You and your opponent decide which cards from a selection to merge into one each round.</p>
+    <p class="text-2xl text-center font-bold mt-5">Whoever has the stronger combination wins the round!</p>
+  </div>
+  <div class="flex items-center place-content-center w-full gap-10 align-bottom">
     {#if value === undefined}
       <btn class="btn variant-filled-primary w-40 h-10" on:click={() => setCreate(false)}>
         Join Lobby

@@ -2,6 +2,9 @@
   import type {Card, Lobby} from "$lib/types/types.ts";
   import {api} from "$lib/backend_adapter/backend/api.ts";
   import CardComp from "$lib/components/CardFront.svelte";
+  import {getToastStore} from "@skeletonlabs/skeleton";
+
+  const toastStore = getToastStore()
 
   export let lobby: Lobby
   export let player_id: "0" | "1"
@@ -31,8 +34,15 @@
     selected_cards = new_selected_cards
   }
   async function buyCards() {
-    lobby = await api.game.postGameStateBuyCards(player_id, lobby_id, selected_cards)
-    phase = "select"
+    try {
+      lobby = await api.game.postGameStateBuyCards(player_id, lobby_id, selected_cards)
+      phase = "select"
+    } catch(e) {
+      toastStore.trigger({
+        message: e.error ? e.error : "Unknown error buying cards",
+        background: "variant-filled-error",
+      })
+    }
   }
 </script>
 
@@ -57,7 +67,7 @@
       {/each}
     </div>
     {#if phase === "buy"}
-      <button on:click={() => buyCards()} class="btn variant-filled-primary">Buy Cards</button>
+      <button on:click={() => buyCards()} class="btn variant-filled-primary">Buy Selected Cards</button>
     {/if}
   </div>
 </div>

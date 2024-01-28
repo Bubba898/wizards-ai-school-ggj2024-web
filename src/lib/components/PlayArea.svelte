@@ -1,7 +1,7 @@
 <script lang="ts">
   import Hand from "$lib/components/Hand.svelte";
   import Shop from "$lib/components/Shop.svelte";
-  import type {Lobby} from "$lib/types/types.js";
+  import type {Card, Lobby} from "$lib/types/types.js";
   import CardBack from "$lib/components/CardBack.svelte";
   import CardFront from "$lib/components/CardFront.svelte";
   export let lobby: Lobby
@@ -17,15 +17,6 @@
   import { withPrevious } from 'svelte-previous'
   import Loader from "$lib/components/GlitchText.svelte";
   import GlitchText from "$lib/components/GlitchText.svelte";
-  let [_next_round_in, prev_next_round_in] = withPrevious(lobby.next_round_in)
-  $: _next_round_in = next_round_in
-  // to update the values, simply assign to the writable store.
-  $: round_counter = 0
-  $: if (prev_next_round_in !== undefined && next_round_in === undefined) {
-    console.log("next round")
-    phase = "buy"
-    round_counter = round_counter + 1
-  }
 
   $: you_win_all = (player_id === "0" && lobby?.player_1?.health <= 0) || (player_id === "1" && lobby?.player_0?.health <= 0)
   $: you_lost_all = (player_id === "1" && lobby?.player_1?.health <= 0) || (player_id === "0" && lobby?.player_0?.health <= 0)
@@ -39,33 +30,60 @@
   $: amount_of_cards_of_opponent = player_id === "0" ? lobby?.player_1?.amount_of_cards_in_hand : lobby?.player_0?.amount_of_cards_in_hand
   $: has_shop = player?.shop?.cards?.length ? player?.shop?.cards?.length > 0 : false
 
+  let [_next_round_in, prev_next_round_in] = withPrevious(lobby.next_round_in)
+  $: _next_round_in = next_round_in
+  // to update the values, simply assign to the writable store.
+  $: round_counter = 0
+  $: if (prev_next_round_in !== undefined && next_round_in === undefined) {
+    phase = "buy"
+    round_counter = round_counter + 1
+  }
+
+  $: own_merged_card = player?.merged_card
+
+
 </script>
 <div class="flex flex-col justify-between h-ful shrink gap-4 pb-8">
   {#if !you_lost_all && !you_win_all}
+
     <div class="card p-4 h-full">
-      <div class="flex justify-between">
-        <h3 class="h3">Your Opponent (Player {1-+player_id})</h3>
-        <p class="flex justify-end gap-1">{other_player_health}<img src="assets/heart.png" alt="health" class="w-[16px] h-[16px] ml-auto mt-1" /></p>
+     <div>
+      <h4 class="h4">Your Opponent (Player {player_id}): </h4>
+    <div class="flex">
+      <div class="flex gap-1">
+        {#each Array(other_player_health) as _}
+          <img
+            src="assets/heart.png"
+            alt="health"
+            class="w-[16px] h-[16px] ml-auto mt-1"
+          />
+        {/each}
       </div>
+    </div>
+    </div>
       <div class="flex gap-4 place-content-center">
         {#each Array(amount_of_cards_of_opponent) as _,  i}
           <CardBack />
         {/each}
       </div>
     </div>
-    <div class="flex card shrink place-content-center justify-between p-4 min-h-20">
+    <div class="flex card lg:flex-row md:flex-row flex-col shrink place-content-center justify-between p-4 min-h-20">
       <div>
-        {#if other_player_merged_card}
+        {#if other_player_merged_card || phase === undefined}
           <h3 class="h3">Opponents card</h3>
-          <CardFront card={other_player_merged_card} selected={false}/>
+          {#if !own_merged_card}
+            <CardBack/>
+          {:else}
+            <CardFront card={other_player_merged_card} selected={false}/>
+          {/if}
         {/if}
       </div>
       <div class="p-2 flex flex-col place-content-center">
-        {#if player.merged_card && !other_player_merged_card}
+        {#if own_merged_card && !other_player_merged_card && phase === undefined}
           <Loader id="header" font_size="2.5rem">Waiting for other player...</Loader>
-        {:else if !player.merged_card && phase === undefined}
+        {:else if !own_merged_card && phase === undefined}
           <Loader id="header" font_size="2.5rem">Merging your cards...</Loader>
-        {:else if other_player_merged_card && player.merged_card && next_round_in === undefined}
+        {:else if other_player_merged_card && own_merged_card && next_round_in === undefined && phase === undefined}
           <Loader id="header" font_size="2.5rem">Fighting...</Loader>
         {:else if next_round_in}
           {#if lobby.fights.length !== 0}
@@ -94,9 +112,9 @@
         {/if}
       </div>
       <div>
-        {#if player.merged_card}
+        {#if own_merged_card}
           <h3 class="h3">Your card</h3>
-          <CardFront card={player.merged_card} selected={false}/>
+          <CardFront card={own_merged_card} selected={false}/>
         {/if}
       </div>
     </div>
