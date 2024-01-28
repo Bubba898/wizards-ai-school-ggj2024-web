@@ -9,7 +9,7 @@
 <div class="scanlines"></div>
 
 
-{@html `<style>
+{@html `<${''}style>
 .container-glitch-${id} {
   text-align: center;
 }
@@ -21,7 +21,7 @@
   position: relative;
   text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff,
     0.025em 0.04em 0 #fffc00;
-  animation: glitch-${id} 725ms infinite;
+  animation: glitch-${id} 240ms infinite;
 }
 
 .glitch-${id} span {
@@ -31,14 +31,14 @@
 }
 
 .glitch-${id} span:first-child {
-  animation: glitch-${id} 500ms infinite;
+  animation: glitch-${id} 166ms infinite;
   clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
   transform: translate(-0.04em, -0.03em);
   opacity: 0.75;
 }
 
 .glitch-${id} span:last-child {
-  animation: glitch-${id} 375ms infinite;
+  animation: glitch-${id} 120ms infinite;
   clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
   transform: translate(0.04em, 0.03em);
   opacity: 0.75;
@@ -74,4 +74,4 @@
       -0.04em -0.025em 0 #fffc00;
   }
 }
-</style>`}
+</${''}style>`}

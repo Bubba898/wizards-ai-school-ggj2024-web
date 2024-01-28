@@ -5,6 +5,7 @@
     Modal,
     Toast,
   } from '@skeletonlabs/skeleton';
+  export const prerender = true;
 
   // Floating UI for Popups
   import { computePosition, flip, shift, offset, arrow } from '@floating-ui/dom';
@@ -14,19 +15,6 @@
   import { initializeStores } from '@skeletonlabs/skeleton';
 
   initializeStores();
-
-  import { onNavigate } from '$app/navigation';
-
-  onNavigate((navigation) => {
-      if (!document.startViewTransition) return;
-
-      return new Promise((resolve) => {
-          document.startViewTransition(async () => {
-              resolve();
-              await navigation.complete;
-          });
-      });
-  });
 </script>
 <!-- Toast -->
 <Toast />
