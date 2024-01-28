@@ -21,8 +21,7 @@ export type PlayerState = {
 export type Lobby = {
   player_0: PlayerState
   player_1: PlayerState
-  fights: Fight[]
-  next_round_in?: number
+  fight: Fight[]
 }
 
 export type Fight = {

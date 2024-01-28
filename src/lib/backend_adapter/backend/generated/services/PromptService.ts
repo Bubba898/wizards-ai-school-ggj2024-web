@@ -7,6 +7,28 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class PromptService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
+     * Uses TTS to generate audio from text
+     * @param requestBody
+     * @returns any Default Response
+     * @throws ApiError
+     */
+    public postPromptAudio(
+        requestBody: {
+            prompt: string;
+            lobby_id: string;
+        },
+    ): CancelablePromise<{
+        audioUrl: string;
+        executionTimeMs: number;
+    }> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/promptAudio',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+    /**
      * Asks DALL-E to generate an image
      * @param requestBody
      * @returns any Default Response
@@ -15,6 +37,7 @@ export class PromptService {
     public postPromptImage(
         requestBody: {
             prompt: string;
+            lobby_id: string;
         },
     ): CancelablePromise<{
         dalleResponseUrl: string;
@@ -36,6 +59,7 @@ export class PromptService {
     public postPromptJson(
         requestBody: {
             prompt: string;
+            lobby_id: string;
         },
     ): CancelablePromise<{
         gptResponse: string;

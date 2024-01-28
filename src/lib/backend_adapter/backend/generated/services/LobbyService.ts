@@ -65,6 +65,7 @@ export class LobbyService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
         player_1: {
             balance?: number;
@@ -96,12 +97,12 @@ export class LobbyService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
-        fights?: Array<{
+        fight?: {
             winner?: '0' | '1';
             reason?: string;
-        }>;
-        next_round_in?: number;
+        };
     }> {
         return this.httpRequest.request({
             method: 'POST',

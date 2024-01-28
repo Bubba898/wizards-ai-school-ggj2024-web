@@ -4,6 +4,8 @@
   import type {Card, Lobby} from "$lib/types/types.js";
   import CardBack from "$lib/components/CardBack.svelte";
   import CardFront from "$lib/components/CardFront.svelte";
+  import {getToastStore} from "@skeletonlabs/skeleton";
+
   export let lobby: Lobby
   export let player_id: "0" | "1"
   export let lobby_id: string
@@ -18,6 +20,16 @@
   import Loader from "$lib/components/GlitchText.svelte";
   import GlitchText from "$lib/components/GlitchText.svelte";
 
+  async function on_ready() {
+    try {
+      lobby = await api.game.postGameStateReady(lobby_id, player_id)
+    } catch (e) {
+      toastStore.trigger({
+        message: e.error ? e.error : "Connection lost... retrying",
+        background: "variant-filled-error",
+    })}
+  }
+
   $: you_win_all = (player_id === "0" && lobby?.player_1?.health <= 0) || (player_id === "1" && lobby?.player_0?.health <= 0)
   $: you_lost_all = (player_id === "1" && lobby?.player_1?.health <= 0) || (player_id === "0" && lobby?.player_0?.health <= 0)
 
@@ -30,22 +42,17 @@
   $: amount_of_cards_of_opponent = player_id === "0" ? lobby?.player_1?.amount_of_cards_in_hand : lobby?.player_0?.amount_of_cards_in_hand
   $: has_shop = player?.shop?.cards?.length ? player?.shop?.cards?.length > 0 : false
 
-  let [_next_round_in, prev_next_round_in] = withPrevious(lobby.next_round_in)
-  $: _next_round_in = next_round_in
   // to update the values, simply assign to the writable store.
-  $: round_counter = 0
-  $: if (prev_next_round_in !== undefined && next_round_in === undefined) {
-    phase = "buy"
-    round_counter = round_counter + 1
-  }
+  $: round_counter = lobby.round_counter
 
   $: own_merged_card = player?.merged_card
+  $: self_ready = player?.ready
+  $: other_ready = player_id === "0" ? lobby?.player_1?.ready : lobby?.player_0?.ready
 
 
 </script>
 <div class="flex flex-col justify-between h-ful shrink gap-4 pb-8">
   {#if !you_lost_all && !you_win_all}
-
     <div class="card p-4 h-full">
      <div>
       <h4 class="h4">Your Opponent (Player {player_id}): </h4>
@@ -83,32 +90,38 @@
           <Loader id="header" font_size="2.5rem">Waiting for other player...</Loader>
         {:else if !own_merged_card && phase === undefined}
           <Loader id="header" font_size="2.5rem">Merging your cards...</Loader>
-        {:else if other_player_merged_card && own_merged_card && next_round_in === undefined && phase === undefined}
+        {:else if other_player_merged_card && own_merged_card && phase === undefined}
           <Loader id="header" font_size="2.5rem">Fighting...</Loader>
-        {:else if next_round_in}
-          {#if lobby.fights.length !== 0}
-            <div class="card variant-glass mt-4 p-4">
-              {#if lobby.fights[lobby.fights.length -1].winner === player_id}
-                <h3 class="h3 pb-4">You won!</h3>
+        {:else if lobby.fight}
+          <div class="card variant-glass mt-4 p-4">
+            {#if lobby.fight.winner === player_id}
+              <h3 class="h3 pb-4">You won!</h3>
+            {:else}
+              <h3 class="h3 pb-4">You lost!</h3>
+            {/if}
+            <p>{lobby.fight.reason}</p>
+            <div class="flex gap-4 place-content-center">
+              {#if self_ready}
+                <div class="card variant-ringed-success">
+                  Ready
+                </div>
               {:else}
-                <h3 class="h3 pb-4">You lost!</h3>
+                <button class="btn btn-primary" on:click={on_ready}>Ready</button>
               {/if}
-            <p>{lobby.fights[lobby.fights.length -1].reason}</p>
-            </div>
-          {/if}
-          <p class="m-4 w-full place-content-center">Next round in {next_round_in}</p>
+              {#if other_ready}
+                <div class="card variant-ringed-success">
+                  Other Player is ready for the next round.
+                </div>
+              {:else}
+                <div class="card variant-ringed-warning">
+                  Other Player is not ready for the next round.
+                </div>
+              {/if}
+              <CardFront card={lobby.fight.card_1} selected={false}/>
+          </div>
+          </div>
         {:else if lobby_id && !(lobby === undefined)}
           <GlitchText id="header" font_size="2.5rem">Round: {round_counter} - {phase ? phase : ""}</GlitchText>
-          {#if lobby.fights.length !== 0}
-            <div class="card variant-glass mt-4 p-4">
-              {#if lobby.fights[lobby.fights.length -1].winner === player_id}
-                <h3 class="h3 pb-4">You won the last round!</h3>
-              {:else}
-                <h3 class="h3 pb-4">You lost the last round!</h3>
-              {/if}
-            <p>{lobby.fights[lobby.fights.length -1].reason}</p>
-            </div>
-          {/if}
         {/if}
       </div>
       <div>

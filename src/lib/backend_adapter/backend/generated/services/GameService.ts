@@ -49,6 +49,7 @@ export class GameService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
         player_1: {
             balance?: number;
@@ -80,12 +81,12 @@ export class GameService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
-        fights?: Array<{
+        fight?: {
             winner?: '0' | '1';
             reason?: string;
-        }>;
-        next_round_in?: number;
+        };
     }> {
         return this.httpRequest.request({
             method: 'POST',
@@ -96,6 +97,98 @@ export class GameService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                404: `Default Response`,
+            },
+        });
+    }
+    /**
+     * Ends the round
+     * @param playerId
+     * @param lobbyId
+     * @returns any Default Response
+     * @throws ApiError
+     */
+    public postGameStateReady(
+        playerId: '0' | '1',
+        lobbyId: string,
+    ): CancelablePromise<{
+        player_0: {
+            balance?: number;
+            health: number;
+            shop?: {
+                cards: Array<{
+                    name: string;
+                    type: 'character' | 'component' | 'merged';
+                    url?: string;
+                    cost: number;
+                }>;
+            };
+            hand?: Array<{
+                name: string;
+                type: 'character' | 'component' | 'merged';
+                url?: string;
+                cost: number;
+            }>;
+            selected_cards?: Array<{
+                name: string;
+                type: 'character' | 'component' | 'merged';
+                url?: string;
+                cost: number;
+            }>;
+            merged_card?: {
+                name: string;
+                type: 'character' | 'component' | 'merged';
+                url?: string;
+                cost: number;
+            };
+            amount_of_cards_in_hand?: number;
+            ready: boolean;
+        };
+        player_1: {
+            balance?: number;
+            health: number;
+            shop?: {
+                cards: Array<{
+                    name: string;
+                    type: 'character' | 'component' | 'merged';
+                    url?: string;
+                    cost: number;
+                }>;
+            };
+            hand?: Array<{
+                name: string;
+                type: 'character' | 'component' | 'merged';
+                url?: string;
+                cost: number;
+            }>;
+            selected_cards?: Array<{
+                name: string;
+                type: 'character' | 'component' | 'merged';
+                url?: string;
+                cost: number;
+            }>;
+            merged_card?: {
+                name: string;
+                type: 'character' | 'component' | 'merged';
+                url?: string;
+                cost: number;
+            };
+            amount_of_cards_in_hand?: number;
+            ready: boolean;
+        };
+        fight?: {
+            winner?: '0' | '1';
+            reason?: string;
+        };
+    }> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/game_state/{lobby_id}/{player_id}/ready',
+            path: {
+                'player_id': playerId,
+                'lobby_id': lobbyId,
+            },
             errors: {
                 404: `Default Response`,
             },
@@ -142,6 +235,7 @@ export class GameService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
         player_1: {
             balance?: number;
@@ -173,12 +267,12 @@ export class GameService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
-        fights?: Array<{
+        fight?: {
             winner?: '0' | '1';
             reason?: string;
-        }>;
-        next_round_in?: number;
+        };
     }> {
         return this.httpRequest.request({
             method: 'GET',
@@ -235,6 +329,7 @@ export class GameService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
         player_1: {
             balance?: number;
@@ -266,12 +361,12 @@ export class GameService {
                 cost: number;
             };
             amount_of_cards_in_hand?: number;
+            ready: boolean;
         };
-        fights?: Array<{
+        fight?: {
             winner?: '0' | '1';
             reason?: string;
-        }>;
-        next_round_in?: number;
+        };
     }> {
         return this.httpRequest.request({
             method: 'POST',
