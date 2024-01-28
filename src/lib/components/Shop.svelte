@@ -39,7 +39,7 @@
       phase = "select"
     } catch(e) {
       toastStore.trigger({
-        message: e.error ? e.error : "Unknown error buying cards",
+        message: e.error ? e.error : "Unknown error buying cards. You probably don't have enough balance to buy them.",
         background: "variant-filled-error",
       })
     }
