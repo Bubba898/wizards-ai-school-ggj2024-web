@@ -8,15 +8,22 @@ export class LobbyService {
     constructor(public readonly httpRequest: BaseHttpRequest) {}
     /**
      * Returns a lobby id
+     * @param requestBody
      * @returns any Default Response
      * @throws ApiError
      */
-    public postLobby(): CancelablePromise<{
+    public postLobby(
+        requestBody: {
+            open_ai_api_key: string;
+        },
+    ): CancelablePromise<{
         lobby_id: string;
     }> {
         return this.httpRequest.request({
             method: 'POST',
             url: '/lobby',
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
     /**

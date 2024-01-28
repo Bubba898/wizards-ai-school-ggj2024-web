@@ -1,11 +1,11 @@
 <script lang="ts">
   import type {Card} from "$lib/types/types.ts";
-  import _, {max, min} from "lodash";
+  import _ from "lodash";
   export let card: Card;
   $: url = card.url ?? `assets/cards/${card.name.toLowerCase().replaceAll("_", " ", )}.png`
   export let selected: boolean
   $: selected
-  $: font_size = min([24, max([160/name.length*3.6, 8])])
+  $: font_size = _.min([24, _.max([160/card.name.length*3.6, 8])])
 </script>
 
 

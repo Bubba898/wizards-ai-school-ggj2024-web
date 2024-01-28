@@ -14,7 +14,7 @@
 
 
   async function createLobby() {
-    lobby_id = (await api.lobby.postLobby({open_ai_api_key: openai_api_key_input})).lobby_id
+    lobby_id = (await api.lobby.postLobby({open_ai_api_key: openai_api_key_input || ""})).lobby_id
     player_id = "0"
   }
 
