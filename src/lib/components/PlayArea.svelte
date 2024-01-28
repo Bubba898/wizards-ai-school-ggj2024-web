@@ -27,6 +27,9 @@
     round_counter = round_counter + 1
   }
 
+  $: you_win_all = (player_id === "0" && lobby?.player_1?.health <= 0) || (player_id === "1" && lobby?.player_0?.health <= 0)
+  $: you_lost_all = (player_id === "1" && lobby?.player_1?.health <= 0) || (player_id === "0" && lobby?.player_0?.health <= 0)
+
 
   $: lobby
   $: player = player_id === "0" ? lobby?.player_0 : lobby?.player_1
@@ -38,78 +41,92 @@
 
 </script>
 <div class="flex flex-col justify-between h-ful shrink gap-4 pb-8">
-  <div class="card p-4 h-full">
-    <div class="flex justify-between">
-      <h3 class="h3">Your Opponent (Player {1-+player_id})</h3>
-      <p class="flex justify-end gap-1">{other_player_health}<img src="assets/heart.png" alt="health" class="w-[16px] h-[16px] ml-auto mt-1" /></p>
+  {#if !you_lost_all && !you_win_all}
+    <div class="card p-4 h-full">
+      <div class="flex justify-between">
+        <h3 class="h3">Your Opponent (Player {1-+player_id})</h3>
+        <p class="flex justify-end gap-1">{other_player_health}<img src="assets/heart.png" alt="health" class="w-[16px] h-[16px] ml-auto mt-1" /></p>
+      </div>
+      <div class="flex gap-4 place-content-center">
+        {#each Array(amount_of_cards_of_opponent) as _,  i}
+          <CardBack />
+        {/each}
+      </div>
     </div>
-    <div class="flex gap-4 place-content-center">
-      {#each Array(amount_of_cards_of_opponent) as _,  i}
-        <CardBack />
-      {/each}
-    </div>
-  </div>
-  <div class="flex card shrink place-content-center justify-between p-4 min-h-20">
-    <div>
-      {#if other_player_merged_card}
-        <h3 class="h3">Opponents card</h3>
-        <CardFront card={other_player_merged_card} selected={false}/>
-      {/if}
-    </div>
-    <div class="p-2 flex flex-col place-content-center">
-      {#if player.merged_card && !other_player_merged_card}
-        <Loader id="header" font_size="2.5rem">Waiting for other player...</Loader>
-      {:else if !player.merged_card && phase === undefined}
-        <Loader id="header" font_size="2.5rem">Merging your cards...</Loader>
-      {:else if other_player_merged_card && player.merged_card && next_round_in === undefined}
-        <Loader id="header" font_size="2.5rem">Fighting...</Loader>
-      {:else if next_round_in}
-        {#if lobby.fights.length !== 0}
-          <div class="card variant-glass mt-4 p-4">
-            {#if lobby.fights[lobby.fights.length -1].winner === player_id}
-              <h3 class="h3 pb-4">You won!</h3>
-            {:else}
-              <h3 class="h3 pb-4">You lost!</h3>
-            {/if}
-          <p>{lobby.fights[lobby.fights.length -1].reason}</p>
-          </div>
+    <div class="flex card shrink place-content-center justify-between p-4 min-h-20">
+      <div>
+        {#if other_player_merged_card}
+          <h3 class="h3">Opponents card</h3>
+          <CardFront card={other_player_merged_card} selected={false}/>
         {/if}
-        <p class="m-4 w-full place-content-center">Next round in {next_round_in}</p>
-      {:else if lobby_id && !(lobby === undefined)}
-        <GlitchText id="header" font_size="2.5rem">Round: {round_counter} - {phase ? phase : ""}</GlitchText>
-        {#if lobby.fights.length !== 0}
-          <div class="card variant-glass mt-4 p-4">
-            {#if lobby.fights[lobby.fights.length -1].winner === player_id}
-              <h3 class="h3 pb-4">You won the last round!</h3>
-            {:else}
-              <h3 class="h3 pb-4">You lost the last round!</h3>
-            {/if}
-          <p>{lobby.fights[lobby.fights.length -1].reason}</p>
-          </div>
+      </div>
+      <div class="p-2 flex flex-col place-content-center">
+        {#if player.merged_card && !other_player_merged_card}
+          <Loader id="header" font_size="2.5rem">Waiting for other player...</Loader>
+        {:else if !player.merged_card && phase === undefined}
+          <Loader id="header" font_size="2.5rem">Merging your cards...</Loader>
+        {:else if other_player_merged_card && player.merged_card && next_round_in === undefined}
+          <Loader id="header" font_size="2.5rem">Fighting...</Loader>
+        {:else if next_round_in}
+          {#if lobby.fights.length !== 0}
+            <div class="card variant-glass mt-4 p-4">
+              {#if lobby.fights[lobby.fights.length -1].winner === player_id}
+                <h3 class="h3 pb-4">You won!</h3>
+              {:else}
+                <h3 class="h3 pb-4">You lost!</h3>
+              {/if}
+            <p>{lobby.fights[lobby.fights.length -1].reason}</p>
+            </div>
+          {/if}
+          <p class="m-4 w-full place-content-center">Next round in {next_round_in}</p>
+        {:else if lobby_id && !(lobby === undefined)}
+          <GlitchText id="header" font_size="2.5rem">Round: {round_counter} - {phase ? phase : ""}</GlitchText>
+          {#if lobby.fights.length !== 0}
+            <div class="card variant-glass mt-4 p-4">
+              {#if lobby.fights[lobby.fights.length -1].winner === player_id}
+                <h3 class="h3 pb-4">You won the last round!</h3>
+              {:else}
+                <h3 class="h3 pb-4">You lost the last round!</h3>
+              {/if}
+            <p>{lobby.fights[lobby.fights.length -1].reason}</p>
+            </div>
+          {/if}
         {/if}
-      {/if}
+      </div>
+      <div>
+        {#if player.merged_card}
+          <h3 class="h3">Your card</h3>
+          <CardFront card={player.merged_card} selected={false}/>
+        {/if}
+      </div>
     </div>
-    <div>
-      {#if player.merged_card}
-        <h3 class="h3">Your card</h3>
-        <CardFront card={player.merged_card} selected={false}/>
+    <div class={`grid ${has_shop ? 'lg:grid-cols-2 md:grid-cols-2': ''} grid-cols-1 columns-xs gap-4`}>
+      {#if has_shop}
+        <Shop
+          player_id={player_id}
+          lobby_id={lobby_id}
+          bind:lobby
+          bind:phase
+        />
       {/if}
-    </div>
-  </div>
-  <div class={`grid ${has_shop ? 'lg:grid-cols-2 md:grid-cols-2': ''} grid-cols-1 columns-xs gap-4`}>
-    {#if has_shop}
-      <Shop
+      <Hand
         player_id={player_id}
         lobby_id={lobby_id}
         bind:lobby
         bind:phase
       />
+    </div>
+    {:else if you_win_all}
+      <div class="flex flex-col justify-center items-center h-full">
+        <GlitchText>You won the game.</GlitchText>
+        <div class="m-10"/>
+        <GlitchText font_size="2.5rem" id="lobby_id">Your opponents health went to 0.</GlitchText>
+      </div>
+    {:else if you_lost_all}
+      <div class="flex flex-col justify-center items-center h-full">
+        <GlitchText>You won the game!</GlitchText>
+        <div class="m-10"/>
+        <GlitchText font_size="2.5rem" id="lobby_id">Your health went to 0.</GlitchText>
+      </div>
     {/if}
-    <Hand
-      player_id={player_id}
-      lobby_id={lobby_id}
-      bind:lobby
-      bind:phase
-    />
-  </div>
 </div>
