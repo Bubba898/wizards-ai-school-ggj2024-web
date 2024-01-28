@@ -5,6 +5,7 @@
   const toastStore = getToastStore();
 
   let lobby_id_input: string | undefined
+  let openai_api_key_input: string | undefined
 
   $: lobby_id_input = "";
   export let value: undefined | boolean = undefined
@@ -13,7 +14,7 @@
 
 
   async function createLobby() {
-    lobby_id = (await api.lobby.postLobby()).lobby_id
+    lobby_id = (await api.lobby.postLobby({open_ai_api_key: openai_api_key_input})).lobby_id
     player_id = "0"
   }
 
@@ -42,11 +43,17 @@
       <btn class="btn variant-filled-primary w-40 h-10" on:click={() => setCreate(false)}>
         Join Lobby
       </btn>
-      <btn class="btn variant-filled-primary w-40" on:click={createLobby}>
+      <btn class="btn variant-filled-primary w-40" on:click={() => setCreate(true)}>
         Create Lobby
       </btn>
     {/if}
-    {#if value === false}
+    {#if value}
+      <div>
+        <span>Enter OPENAI API KEY: </span>
+        <input class="input" type="password" bind:value={openai_api_key_input} />
+      </div>
+      <button on:click={createLobby} class="btn variant-filled-primary">Create</button>
+    {:else if value === false}
       <div>
         <span>Enter Lobby ID: </span>
         <input class="input" type="text" bind:value={lobby_id_input} />
