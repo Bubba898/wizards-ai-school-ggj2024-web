@@ -5,7 +5,9 @@
   import CardBack from "$lib/components/CardBack.svelte";
   import CardFront from "$lib/components/CardFront.svelte";
   import {getToastStore} from "@skeletonlabs/skeleton";
+  import {api} from "$lib/backend_adapter/backend/api.ts";
 
+  const toastStore = getToastStore()
   export let lobby: Lobby
   export let player_id: "0" | "1"
   export let lobby_id: string
@@ -22,8 +24,10 @@
 
   async function on_ready() {
     try {
-      lobby = await api.game.postGameStateReady(lobby_id, player_id)
+      console.log("ready")
+      lobby = await api.game.postGameStateReady(player_id, lobby_id)
     } catch (e) {
+      console.log(e)
       toastStore.trigger({
         message: e.error ? e.error : "Connection lost... retrying",
         background: "variant-filled-error",
@@ -48,9 +52,11 @@
   $: own_merged_card = player?.merged_card
   $: self_ready = player?.ready
   $: other_ready = player_id === "0" ? lobby?.player_1?.ready : lobby?.player_0?.ready
+  $: fight = lobby?.fight
 
 
 </script>
+
 <div class="flex flex-col justify-between h-ful shrink gap-4 pb-8">
   {#if !you_lost_all && !you_win_all}
     <div class="card p-4 h-full">
@@ -76,7 +82,7 @@
     </div>
     <div class="flex card lg:flex-row md:flex-row flex-col shrink place-content-center justify-between p-4 min-h-20">
       <div>
-        {#if other_player_merged_card || phase === undefined}
+        {#if other_player_merged_card}
           <h3 class="h3">Opponents card</h3>
           {#if !own_merged_card}
             <CardBack/>
@@ -90,35 +96,34 @@
           <Loader id="header" font_size="2.5rem">Waiting for other player...</Loader>
         {:else if !own_merged_card && phase === undefined}
           <Loader id="header" font_size="2.5rem">Merging your cards...</Loader>
-        {:else if other_player_merged_card && own_merged_card && phase === undefined}
+        {:else if other_player_merged_card && own_merged_card && phase === undefined && !fight}
           <Loader id="header" font_size="2.5rem">Fighting...</Loader>
-        {:else if lobby.fight}
+        {:else if fight !== undefined}
           <div class="card variant-glass mt-4 p-4">
-            {#if lobby.fight.winner === player_id}
+            {#if fight.winner === player_id}
               <h3 class="h3 pb-4">You won!</h3>
             {:else}
               <h3 class="h3 pb-4">You lost!</h3>
             {/if}
-            <p>{lobby.fight.reason}</p>
+            <p>{fight.reason}</p>
             <div class="flex gap-4 place-content-center">
               {#if self_ready}
                 <div class="card variant-ringed-success">
                   Ready
                 </div>
               {:else}
-                <button class="btn btn-primary" on:click={on_ready}>Ready</button>
+                <button class="btn variant-ringed-success" on:click={on_ready}>Ready</button>
               {/if}
               {#if other_ready}
-                <div class="card variant-ringed-success">
+                <div class="card variant-filled-success p-3">
                   Other Player is ready for the next round.
                 </div>
               {:else}
-                <div class="card variant-ringed-warning">
+                <div class="card variant-filled-warning p-3">
                   Other Player is not ready for the next round.
                 </div>
               {/if}
-              <CardFront card={lobby.fight.card_1} selected={false}/>
-          </div>
+            </div>
           </div>
         {:else if lobby_id && !(lobby === undefined)}
           <GlitchText id="header" font_size="2.5rem">Round: {round_counter} - {phase ? phase : ""}</GlitchText>
