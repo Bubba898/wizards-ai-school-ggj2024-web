@@ -155,13 +155,13 @@
     </div>
     {:else if you_win_all}
       <div class="flex flex-col justify-center items-center h-full">
-        <GlitchText>You won the game.</GlitchText>
+        <GlitchText>You won the game!</GlitchText>
         <div class="m-10"/>
         <GlitchText font_size="2.5rem" id="lobby_id">Your opponents health went to 0.</GlitchText>
       </div>
     {:else if you_lost_all}
       <div class="flex flex-col justify-center items-center h-full">
-        <GlitchText>You won the game!</GlitchText>
+        <GlitchText>You lost the game :(</GlitchText>
         <div class="m-10"/>
         <GlitchText font_size="2.5rem" id="lobby_id">Your health went to 0.</GlitchText>
       </div>
