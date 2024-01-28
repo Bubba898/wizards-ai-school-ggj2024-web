@@ -11,7 +11,7 @@
   $: shop_state = (player_id === "0" ? lobby.player_0.shop : lobby.player_1.shop) || {cards: [] }
   $: balance = (player_id === "0" ? lobby.player_0.balance : lobby.player_1.balance) || 0
   export let lobby_id: string
-  export let phase: "select" | "buy" | undefined
+  export let phase: "select" | "buy"
   $: phase
 
   let selected_cards: string[]
@@ -47,7 +47,7 @@
 </script>
 
 <div>
-  <div class="card flex flex-col gap-4 p-4 h-full min-h-[415px]">
+  <div class="card variant-glass flex flex-col gap-4 p-4 h-full min-h-[415px]">
     <h4 class="h4">Your Shop</h4>
     <div class="flex gap-4">
       <p class="flex gap-1">Balance: {balance}<img src="assets/coin.png" alt="mana" class="w-[16px] h-[16px] ml-auto mt-1" /></p>

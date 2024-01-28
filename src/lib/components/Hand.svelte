@@ -11,7 +11,8 @@
   const toastStore = getToastStore();
 
   export let lobby_id: string
-  export let phase: "select" | "buy" | undefined
+  export let phase: "select" | "buy"
+  export let merging: boolean
   $: phase
   $: player_health = player_id === "0" ? lobby.player_0.health : lobby.player_1.health
 
@@ -30,7 +31,8 @@
   }
   async function selectCards() {
     try{
-      phase = undefined
+      merging = true
+      phase = "buy"
       lobby = await api.game.postGameStateSelectCards(player_id, lobby_id, selected_cards)
     } catch (e) {
       console.log(e)
@@ -40,11 +42,12 @@
       })
       phase = "select"
     }
+    merging = false
   }
 </script>
 
 <div>
-  <div class="card flex flex-col gap-4 p-4 h-full min-h-[415px]">
+  <div class="card variant-glass flex flex-col gap-4 p-4 h-full min-h-[415px]">
     <h4 class="h4">Your Hand (Player {player_id}): </h4>
     <div class="flex">
       <div class="flex gap-1">

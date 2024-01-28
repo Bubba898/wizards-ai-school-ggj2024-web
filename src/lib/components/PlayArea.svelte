@@ -12,11 +12,10 @@
   export let player_id: "0" | "1"
   export let lobby_id: string
 
-  $: next_round_in = lobby?.next_round_in
 
-  let phase: "select" | "buy" | undefined = "buy"
+  let phase: "select" | "buy" = "buy"
   $: phase
-  export let round_counter = 0
+  export let round_counter = 1
 
   import { withPrevious } from 'svelte-previous'
   import Loader from "$lib/components/GlitchText.svelte";
@@ -34,6 +33,8 @@
     })}
   }
 
+  let merging = false
+
   $: you_win_all = (player_id === "0" && lobby?.player_1?.health <= 0) || (player_id === "1" && lobby?.player_0?.health <= 0)
   $: you_lost_all = (player_id === "1" && lobby?.player_1?.health <= 0) || (player_id === "0" && lobby?.player_0?.health <= 0)
 
@@ -47,19 +48,18 @@
   $: has_shop = player?.shop?.cards?.length ? player?.shop?.cards?.length > 0 : false
 
   // to update the values, simply assign to the writable store.
-  $: round_counter = lobby.round_counter
+  $: round_counter = lobby.round_counter + 1
 
   $: own_merged_card = player?.merged_card
   $: self_ready = player?.ready
   $: other_ready = player_id === "0" ? lobby?.player_1?.ready : lobby?.player_0?.ready
   $: fight = lobby?.fight
 
-
 </script>
 
 <div class="flex flex-col justify-between h-ful shrink gap-4 pb-8">
   {#if !you_lost_all && !you_win_all}
-    <div class="card p-4 h-full">
+    <div class="card variant-glass p-4 h-full">
      <div>
       <h4 class="h4">Your Opponent (Player {player_id}): </h4>
     <div class="flex">
@@ -80,7 +80,7 @@
         {/each}
       </div>
     </div>
-    <div class="flex card lg:flex-row md:flex-row flex-col shrink place-content-center justify-between p-4 min-h-20">
+    <div class="flex variant-glass card lg:flex-row md:flex-row flex-col shrink place-content-center justify-between p-4 min-h-20">
       <div>
         {#if other_player_merged_card}
           <h3 class="h3">Opponents card</h3>
@@ -92,11 +92,11 @@
         {/if}
       </div>
       <div class="p-2 flex flex-col place-content-center">
-        {#if own_merged_card && !other_player_merged_card && phase === undefined}
+        {#if own_merged_card && !other_player_merged_card && merging}
           <Loader id="header" font_size="2.5rem">Waiting for other player...</Loader>
-        {:else if !own_merged_card && phase === undefined}
+        {:else if !own_merged_card && merging}
           <Loader id="header" font_size="2.5rem">Merging your cards...</Loader>
-        {:else if other_player_merged_card && own_merged_card && phase === undefined && !fight}
+        {:else if other_player_merged_card && own_merged_card && !fight}
           <Loader id="header" font_size="2.5rem">Fighting...</Loader>
         {:else if fight !== undefined}
           <div class="card variant-glass mt-4 p-4">
@@ -105,11 +105,11 @@
             {:else}
               <h3 class="h3 pb-4">You lost!</h3>
             {/if}
-            <p>{fight.reason}</p>
+            <p class="pb-8">{fight.reason}</p>
             <div class="flex gap-4 place-content-center">
               {#if self_ready}
-                <div class="card variant-ringed-success">
-                  Ready
+                <div class="card variant-filled-success p-3">
+                  You are Ready
                 </div>
               {:else}
                 <button class="btn variant-ringed-success" on:click={on_ready}>Ready</button>
@@ -150,6 +150,7 @@
         lobby_id={lobby_id}
         bind:lobby
         bind:phase
+        bind:merging
       />
     </div>
     {:else if you_win_all}

@@ -21,20 +21,9 @@
 <!-- Modal -->
 <Modal />
 <!-- App Shell -->
-<AppShell>
-  <svelte:fragment slot="header">
-    <!-- App Bar -->
-
-  </svelte:fragment>
-  <!-- Sidebar -->
-  <svelte:fragment slot="sidebarLeft">
-    <!-- Insert the list: -->
-    <!-- --- -->
-  </svelte:fragment>
   <!-- Page Route Content -->
-  <main id="page-content">
-    <div class="p-8 pt-10">
-        <slot />
-    </div>
-  </main>
-</AppShell>
+<main id="page-content">
+  <div class="p-8 pt-10 bg-blend-darken op" style="background-image: url('assets/ui/background_battle.png');background-repeat: no-repeat; background-size: cover;">
+      <slot />
+  </div>
+</main>

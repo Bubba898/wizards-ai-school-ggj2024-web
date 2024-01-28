@@ -49,7 +49,7 @@
         bind:value={create}
         />
     {:else if lobby === undefined}
-      <div class="flex flex-col justify-center items-center h-full">
+      <div class="variant-glass flex flex-col justify-center items-center h-full">
         <GlitchText>Waiting for another Player...</GlitchText>
         <div class="m-10"/>
         <GlitchText font_size="2.5rem" id="lobby_id">Lobby ID: {lobby_id}</GlitchText>

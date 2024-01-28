@@ -43,7 +43,8 @@
   }
 </script>
 
-<div class="flex flex-col justify-center items-center h-full">
+
+<div class="card variant-glass flex flex-col justify-center items-center h-full" >
   <GlitchText>Welcome to Who would Win!</GlitchText>
   <div class="m-20">
     <p class="text-2xl text-center">You and your opponent decide which cards from a selection to merge into one each round.</p>

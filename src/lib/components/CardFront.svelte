@@ -7,13 +7,21 @@
   export let selected: boolean
   $: selected
   $: font_size = _.min([24, _.max([160/card.name.length*3.6, 8])])
-
+  $: hovering = false
+  $: hover = () => {
+    hovering = true
+  }
+  $: unhover = () => {
+    hovering = false
+  }
 
 </script>
 
 
 <div
   class={`card h-[270px] w-[188px] p-[12px] ${selected ? "glow" : ""} ${card.type === 'merged' ? 'card-background-merged' : card.type === 'character' ? 'card-background-merged': 'card-background-component'}`}
+  on:mouseenter={hover}
+  on:mouseleave={unhover}
 >
   <div class="w-[164px] h-[164px] rounded overflow-hidden">
     <img src={url} alt={card.name} class="w-full h-full object-cover border-2 border-white" />
@@ -28,14 +36,46 @@
         </div>
       </div>
     {/if}
-    <div class=" h-4 flex text-[14px] text-xs font-light mb-2 variant-ghost place-content-center w-full rounded-2xl">{card.type}</div>
+    <div class=" h-4 flex text-[14px] text-xs font-light mb-2 place-content-center w-full rounded-2xl">{card.type}</div>
   </div>
 </div>
+
+{#if hovering}
+  <div class="fixed left-1/2 top-[-250px] z-50">
+  <div style="transform: scale(2, 2)">
+<div
+  class={`card h-[270px] w-[188px] p-[12px] shadow ${card.type === 'merged' ? 'card-background-merged' : card.type === 'character' ? 'card-background-merged': 'card-background-component'}`}
+  on:mouseenter={hover}
+  on:mouseleave={unhover}
+>
+  <div class="w-[164px] h-[164px] rounded overflow-hidden">
+    <img src={url} alt={card.name} class="w-full h-full object-cover border-2 border-white" />
+  </div>
+  <div class="flex flex-col justify-between h-24">
+    <div class="pt-2 h-10 text-[14px] font-bold" style="font-size: {font_size}px">{_.startCase(card.name)}</div>
+    {#if false}
+      <div class="pt-2 flex text-[14px] font-bold text-xl">
+        <div class="flex space-x-2">
+          <img src="assets/coin.png" alt="mana" class="w-[16px] h-[16px] ml-auto mt-1.5" />
+          <div>{card.cost}</div>
+        </div>
+      </div>
+    {/if}
+    <div class=" h-4 flex text-[14px] text-xs font-light mb-2 place-content-center w-full rounded-2xl">{card.type}</div>
+  </div>
+</div>
+  </div></div>
+{/if}
 
 <style>
   .glow {
     filter: drop-shadow(0 0 0.5rem #fff);
   }
+
+  .shadow {
+    filter: drop-shadow(0 0 0.5rem #000);
+  }
+
   .card-background-merged {
       --s: 50px; /* control the size */
       --c1: rgb(var(--color-primary-800));
