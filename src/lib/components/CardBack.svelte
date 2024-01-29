@@ -9,7 +9,6 @@
 <style>
   .card-background  {
   --s: 72px; /* control the size */
-
   background:
     radial-gradient(#C02942 24%,#0000 25%),
     radial-gradient(#53777A 30%,#0000 32%) calc(var(--s)/2) calc(var(--s)/2),
