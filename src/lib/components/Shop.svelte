@@ -37,6 +37,7 @@
     try {
       lobby = await api.game.postGameStateBuyCards(player_id, lobby_id, selected_cards)
       phase = "select"
+      selected_cards = []
     } catch(e) {
       toastStore.trigger({
         message: e.error ? e.error : "Unknown error buying cards. You probably don't have enough balance to buy them.",

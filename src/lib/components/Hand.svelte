@@ -34,6 +34,7 @@
       merging = true
       phase = "buy"
       lobby = await api.game.postGameStateSelectCards(player_id, lobby_id, selected_cards)
+      selected_cards = []
     } catch (e) {
       console.log(e)
       toastStore.trigger({
