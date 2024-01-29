@@ -7,6 +7,7 @@
   const toastStore = getToastStore()
 
   export let lobby: Lobby
+  export let game_over = false
   export let player_id: "0" | "1"
   $: shop_state = (player_id === "0" ? lobby.player_0.shop : lobby.player_1.shop) || {cards: [] }
   $: balance = (player_id === "0" ? lobby.player_0.balance : lobby.player_1.balance) || 0
@@ -67,7 +68,7 @@
         </div>
       {/each}
     </div>
-    {#if phase === "buy"}
+    {#if phase === "buy" && !game_over}
       <button on:click={() => buyCards()} class="btn variant-filled-primary">Buy Selected Cards</button>
     {/if}
   </div>

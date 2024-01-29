@@ -54,11 +54,11 @@
   $: self_ready = player?.ready
   $: other_ready = player_id === "0" ? lobby?.player_1?.ready : lobby?.player_0?.ready
   $: fight = lobby?.fight
+  $: game_over = !you_lost_all && !you_win_all
 
 </script>
 
 <div class="flex flex-col justify-between h-ful shrink gap-4 pb-8">
-  {#if !you_lost_all && !you_win_all}
     <div class="card variant-glass p-4 h-full">
      <div>
       <h4 class="h4">Your Opponent (Player {player_id}): </h4>
@@ -106,24 +106,40 @@
               <h3 class="h3 pb-4">You lost!</h3>
             {/if}
             <p class="pb-8">{fight.reason}</p>
-            <div class="flex gap-4 place-content-center">
-              {#if self_ready}
-                <div class="card variant-filled-success p-3">
-                  You are Ready
+            {#if !game_over}
+              <div class="flex gap-4 place-content-center">
+                {#if self_ready}
+                  <div class="card variant-filled-success p-3">
+                    You are Ready
+                  </div>
+                {:else}
+                  <button class="btn variant-ringed-success" on:click={on_ready}>Ready</button>
+                {/if}
+                {#if other_ready}
+                  <div class="card variant-filled-success p-3">
+                    Other Player is ready for the next round.
+                  </div>
+                {:else}
+                  <div class="card variant-filled-warning p-3">
+                    Other Player is not ready for the next round.
+                  </div>
+                {/if}
+              </div>
+            {:else}
+              {#if you_win_all}
+                <div class="card variant-filled-success flex flex-col justify-center items-center text-center h-full p-3">
+                  <GlitchText>You won the game!</GlitchText>
+                  <div class="m-10"/>
+                  <GlitchText font_size="2.5rem" id="lobby_id">Your opponents health went to 0.</GlitchText>
                 </div>
-              {:else}
-                <button class="btn variant-ringed-success" on:click={on_ready}>Ready</button>
+              {:else if you_lost_all}
+                <div class="card variant-filled-error flex flex-col justify-center items-center text-center h-full p-3">
+                  <GlitchText>You lost the game :(</GlitchText>
+                  <div class="m-10"/>
+                  <GlitchText font_size="2.5rem" id="lobby_id">Your health went to 0.</GlitchText>
+                </div>
               {/if}
-              {#if other_ready}
-                <div class="card variant-filled-success p-3">
-                  Other Player is ready for the next round.
-                </div>
-              {:else}
-                <div class="card variant-filled-warning p-3">
-                  Other Player is not ready for the next round.
-                </div>
-              {/if}
-            </div>
+            {/if}
           </div>
         {:else if lobby_id && !(lobby === undefined)}
           <GlitchText id="header" font_size="2.5rem">Round: {round_counter} - {phase ? phase : ""}</GlitchText>
@@ -143,6 +159,7 @@
           lobby_id={lobby_id}
           bind:lobby
           bind:phase
+          game_over={game_over}
         />
       {/if}
       <Hand
@@ -151,19 +168,7 @@
         bind:lobby
         bind:phase
         bind:merging
+        game_over={game_over}
       />
     </div>
-    {:else if you_win_all}
-      <div class="card variant-glass flex flex-col justify-center items-center h-full">
-        <GlitchText>You won the game!</GlitchText>
-        <div class="m-10"/>
-        <GlitchText font_size="2.5rem" id="lobby_id">Your opponents health went to 0.</GlitchText>
-      </div>
-    {:else if you_lost_all}
-      <div class="card variant-glass flex flex-col justify-center items-center h-full">
-        <GlitchText>You lost the game :(</GlitchText>
-        <div class="m-10"/>
-        <GlitchText font_size="2.5rem" id="lobby_id">Your health went to 0.</GlitchText>
-      </div>
-    {/if}
 </div>

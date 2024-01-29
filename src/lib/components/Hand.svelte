@@ -12,6 +12,7 @@
 
   export let lobby_id: string
   export let phase: "select" | "buy"
+  export let game_over = false
   export let merging: boolean
   $: phase
   $: player_health = player_id === "0" ? lobby.player_0.health : lobby.player_1.health
@@ -76,7 +77,7 @@
         <p class="text-center">No cards in hand</p>
       {/if}
     </div>
-    {#if phase === "select"}
+    {#if phase === "select" && !game_over}
       <button on:click={() => selectCards()} class="btn variant-filled-primary">Merge Selected Cards</button>
     {/if}
   </div>
