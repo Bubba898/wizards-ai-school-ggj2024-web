@@ -54,7 +54,7 @@
   $: self_ready = player?.ready
   $: other_ready = player_id === "0" ? lobby?.player_1?.ready : lobby?.player_0?.ready
   $: fight = lobby?.fight
-  $: game_over = !you_lost_all && !you_win_all
+  $: game_over = you_lost_all || you_win_all
 
 </script>
 
